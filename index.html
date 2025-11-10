@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <title>Skjønnsmessig utvikling i toppturaktivitet</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px 32px;
+      background: #f5f5f5;
+      color: #222;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    p {
+      max-width: 960px;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      margin-top: 20px;
+      align-items: flex-start;
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    }
+
+    .panel h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    input[type="number"] {
+      width: 120px;
+      padding: 4px 6px;
+      font-size: 0.95rem;
+    }
+
+    .small-hint {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .values-box {
+      width: 100%;
+      min-height: 110px;
+      font-family: "Fira Code", ui-monospace, monospace;
+      font-size: 0.85rem;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    /* Ingen høyde på canvas i CSS – styres av width/height-attributter */
+    #trendChart {
+      display: block;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Skjønnsmessig utvikling i toppturaktivitet</h1>
+  <p>
+    Tenk deg at nivået i <strong>år 2000 = 100&nbsp;%</strong>. Bruk sliderne til å angi
+    hvor stor den relative aktiviteten har vært i de senere årene, sammenlignet
+    med 2000. Økningen skal gjenspeile ditt inntrykk av hvor mange
+    som går på topptur.
+  </p>
+
+  <p>
+    Ideen bak wisdom of the crowds – eller «kollektiv klokskap» – er at når mange personer 
+    med ulike erfaringer gir sine uavhengige vurderinger av noe, så vil gjennomsnittet ofte 
+    treffe overraskende nær sannheten. I denne sammenhengen betyr det at hver enkelt tegner 
+    sitt eget inntrykk av hvordan toppturaktiviteten har utviklet seg siden år 2000. Når vi 
+    samler svarene fra mange, kan vi få et samlet bilde av trenden – basert på erfaring og 
+    observasjon fra folk som faktisk er ute i fjellet.
+  </p>
+
+  <div class="layout">
+    <!-- Kontrollpanel -->
+    <div class="panel">
+      <h2>Innstillinger</h2>
+
+      <div class="control-group">
+        <label for="maxPercent">
+          Maks verdi på skalaen (i % av nivået i 2000)
+        </label>
+        <input type="number" id="maxPercent" min="100" step="50" value="500" />
+        <div class="small-hint">
+          Eksempel: 500 betyr at y-aksen går til 500&nbsp;% (5 ganger nivået i 2000),
+          og sliderne kan justeres opp til 500&nbsp;%.
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="control-group">
+        <strong>År 2000:</strong> 100&nbsp;% (fast referanse)
+      </div>
+
+      <div id="sliders"></div>
+
+      <button id="resetBtn">Nullstill til 100&nbsp;% for alle år</button>
+
+      <div class="control-group" style="margin-top: 16px;">
+        <label for="valuesOutput">Tallene dine (kan kopieres/lagres):</label>
+        <textarea id="valuesOutput" class="values-box" readonly></textarea>
+      </div>
+    </div>
+
+    <!-- Grafpanel -->
+    <div class="panel">
+      <h2>Graf</h2>
+      <!-- Fast størrelse på grafen (passer fint på 1080p-skjerm) -->
+      <canvas id="trendChart" width="900" height="500"></canvas>
+      <p class="small-hint">
+        X-aksen viser årstall, og Y-aksen viser relativ mengde toppturaktivitet
+        i prosent av nivået i 2000.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const years = [2000, 2005, 2010, 2015, 2020, 2025];
+    const baseline = 100;
+    let values = years.map(() => baseline);
+
+    const slidersContainer = document.getElementById("sliders");
+    const maxPercentInput = document.getElementById("maxPercent");
+    const valuesOutput = document.getElementById("valuesOutput");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function createSliders(initialMax) {
+      slidersContainer.innerHTML = "";
+      years.forEach((year, index) => {
+        if (year === 2000) return;
+        const row = document.createElement("div");
+        row.className = "slider-row";
+
+        const header = document.createElement("div");
+        header.className = "slider-header";
+
+        const label = document.createElement("span");
+        label.textContent = year.toString();
+
+        const valueSpan = document.createElement("span");
+        valueSpan.id = `value-${year}`;
+        valueSpan.textContent = values[index].toString() + " %";
+
+        header.appendChild(label);
+        header.appendChild(valueSpan);
+
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.min = "0";
+        slider.max = initialMax.toString();
+        slider.step = "5";
+        slider.value = values[index].toString();
+        slider.id = `slider-${year}`;
+
+        slider.addEventListener("input", () => {
+          const v = Number(slider.value);
+          values[index] = v;
+          valueSpan.textContent = v.toString() + " %";
+          updateChartAndOutput();
+        });
+
+        row.appendChild(header);
+        row.appendChild(slider);
+        slidersContainer.appendChild(row);
+      });
+    }
+
+    const ctx = document.getElementById("trendChart").getContext("2d");
+    const chartConfig = {
+      type: "line",
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: "Relativ toppturaktivitet",
+            data: values,
+            tension: 0.3,
+            borderWidth: 3,
+            borderColor: "#1976d2",
+            pointBackgroundColor: "#1976d2",
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: false,          // <- VIKTIG: ikke responsiv
+        maintainAspectRatio: false, // vi styrer selv med width/height
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "År",
+              font: { size: 14 }
+            },
+            ticks: { font: { size: 13 } }
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Relativ mengde toppturaktivitet (%)",
+              font: { size: 14 }
+            },
+            min: 0,
+            max: Number(maxPercentInput.value),
+            ticks: { font: { size: 13 } }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ctx.parsed.y + " %"
+            }
+          }
+        }
+      }
+    };
+
+    const trendChart = new Chart(ctx, chartConfig);
+
+    function updateMaxPercent() {
+      let maxVal = Number(maxPercentInput.value);
+      if (!maxVal || maxVal < 100) {
+        maxVal = 100;
+        maxPercentInput.value = String(maxVal);
+      }
+      years.forEach((year, index) => {
+        if (year === 2000) {
+          values[index] = baseline;
+          return;
+        }
+        const slider = document.getElementById(`slider-${year}`);
+        if (slider) {
+          slider.max = String(maxVal);
+          if (values[index] > maxVal) {
+            values[index] = maxVal;
+            slider.value = maxVal.toString();
+            const span = document.getElementById(`value-${year}`);
+            if (span) span.textContent = maxVal.toString() + " %";
+          }
+        }
+      });
+      trendChart.options.scales.y.max = maxVal;
+      updateChartAndOutput();
+    }
+
+    maxPercentInput.addEventListener("input", updateMaxPercent);
+
+    function updateChartAndOutput() {
+      trendChart.data.datasets[0].data = values;
+      trendChart.update();
+      const lines = years.map((year, idx) => `${year}: ${values[idx]} %`);
+      valuesOutput.value = lines.join("\n");
+    }
+
+    resetBtn.addEventListener("click", () => {
+      values = years.map(() => baseline);
+      years.forEach((year, index) => {
+        if (year === 2000) return;
+        const slider = document.getElementById(`slider-${year}`);
+        const span = document.getElementById(`value-${year}`);
+        if (slider) slider.value = baseline.toString();
+        if (span) span.textContent = baseline.toString() + " %";
+      });
+      updateChartAndOutput();
+    });
+
+    createSliders(Number(maxPercentInput.value));
+    updateChartAndOutput();
+  </script>
+</body>
+</html>
