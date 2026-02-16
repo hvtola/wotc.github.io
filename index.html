@@ -1,346 +1,495 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8" />
-  <title>Skjønnsmessig utvikling i toppturaktivitet</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Studie – topptur-anslag</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 24px 32px;
-      background: #f5f5f5;
-      color: #222;
-      box-sizing: border-box;
-    }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 24px; background:#fff; }
+    .wrap { max-width: 1150px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; background: #fff; }
+    .stack { display: grid; gap: 14px; }
+    h1 { margin: 0 0 10px; font-size: 22px; }
 
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 0.4rem;
-    }
+    /* Strammere intro */
+    .intro { line-height: 1.25; }
+    .intro p, .intro li { font-size: 15px; margin: 6px 0; }
+    .intro ul { margin: 6px 0 0 18px; }
 
-    p {
-      max-width: 960px;
-      line-height: 1.5;
-      font-size: 1rem;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 24px;
-      margin-top: 20px;
-      align-items: flex-start;
-    }
-
-    .panel {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 18px 20px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
-    }
-
-    .panel h2 {
-      font-size: 1.1rem;
-      margin-top: 0;
-      margin-bottom: 0.8rem;
-    }
-
-    .control-group {
-      margin-bottom: 14px;
-    }
-
-    .control-group label {
-      display: block;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-
-    .slider-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-    }
-
-    input[type="range"] {
+    label { font-weight: 600; display:block; margin-bottom: 6px; }
+    input[type="email"], input[type="number"], select, textarea {
       width: 100%;
-    }
-
-    input[type="number"] {
-      width: 120px;
-      padding: 4px 6px;
-      font-size: 0.95rem;
-    }
-
-    .small-hint {
-      font-size: 0.8rem;
-      color: #555;
-    }
-
-    .values-box {
-      width: 100%;
-      min-height: 110px;
-      font-family: "Fira Code", ui-monospace, monospace;
-      font-size: 0.85rem;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      background: #fafafa;
-      resize: vertical;
-    }
-
-    button {
-      margin-top: 8px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      border-radius: 999px;
+      padding: 8px 10px;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
       background: #fff;
+      font-family: inherit;
+    }
+    textarea { resize: vertical; }
+    .small { font-size: 12px; color: #555; margin-top: 6px; }
+
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #e3e3e3; padding: 8px; vertical-align: middle; }
+    th { background: #f6f6f6; text-align: left; font-size: 13px; }
+    td { font-size: 13px; }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border: 1px solid #111;
+      background: #111;
+      color: #fff;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s;
+      font-weight: 600;
+      font-size: 14px;
     }
+    .right { text-align: right; }
 
-    button:hover {
-      background: #f0f0f0;
-    }
+    .hint { padding: 10px 12px; background: #fff7d6; border: 1px solid #ffe08a; border-radius: 10px; font-size: 13px; }
 
-    /* Ingen høyde på canvas i CSS – styres av width/height-attributter */
-    #trendChart {
+    .tableWrap { overflow-x: auto; }
+
+    canvas {
+      width: 100%;
+      height: 260px;
+      border: 1px solid #e3e3e3;
+      border-radius: 12px;
+      background: #fff;
       display: block;
-      margin: 0 auto;
     }
 
-    @media (max-width: 1200px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 900px) {
+      .grid2 { grid-template-columns: 1fr; }
+      th, td { font-size: 12px; }
     }
   </style>
 </head>
+
 <body>
-  <h1>Skjønnsmessig utvikling i toppturaktivitet</h1>
-  <p>
-    Tenk deg at nivået i <strong>år 2000 = 100&nbsp;%</strong>. Bruk sliderne til å angi
-    hvor stor den relative aktiviteten har vært i de senere årene, sammenlignet
-    med 2000. Økningen skal gjenspeile ditt inntrykk av hvor mange
-    som går på topptur.
-  </p>
+  <div class="wrap stack">
 
-  <p>
-    Ideen bak wisdom of the crowds – eller «kollektiv klokskap» – er at når mange personer 
-    med ulike erfaringer gir sine uavhengige vurderinger av noe, så vil gjennomsnittet ofte 
-    treffe overraskende nær sannheten. I denne sammenhengen betyr det at hver enkelt tegner 
-    sitt eget inntrykk av hvordan toppturaktiviteten har utviklet seg siden år 2000. Når vi 
-    samler svarene fra mange, kan vi få et samlet bilde av trenden – basert på erfaring og 
-    observasjon fra folk som faktisk er ute i fjellet.
-  </p>
+    <div class="card intro">
+      <h1>Studie – kan vi bruke alles kollektive kunnskap til å estimere hvor mange som går på topptur?</h1>
 
-  <div class="layout">
-    <!-- Kontrollpanel -->
-    <div class="panel">
-      <h2>Innstillinger</h2>
-
-      <div class="control-group">
-        <label for="maxPercent">
-          Maks verdi på skalaen (i % av nivået i 2000)
-        </label>
-        <input type="number" id="maxPercent" min="100" step="50" value="500" />
-        <div class="small-hint">
-          Eksempel: 500 betyr at y-aksen går til 500&nbsp;% (5 ganger nivået i 2000),
-          og sliderne kan justeres opp til 500&nbsp;%.
-        </div>
-      </div>
-
-      <hr />
-
-      <div class="control-group">
-        <strong>År 2000:</strong> 100&nbsp;% (fast referanse)
-      </div>
-
-      <div id="sliders"></div>
-
-      <button id="resetBtn">Nullstill til 100&nbsp;% for alle år</button>
-
-      <div class="control-group" style="margin-top: 16px;">
-        <label for="valuesOutput">Tallene dine (kan kopieres/lagres):</label>
-        <textarea id="valuesOutput" class="values-box" readonly></textarea>
-      </div>
-    </div>
-
-    <!-- Grafpanel -->
-    <div class="panel">
-      <h2>Graf</h2>
-      <!-- Fast størrelse på grafen (passer fint på 1080p-skjerm) -->
-      <canvas id="trendChart" width="900" height="500"></canvas>
-      <p class="small-hint">
-        X-aksen viser årstall, og Y-aksen viser relativ mengde toppturaktivitet
-        i prosent av nivået i 2000.
+      <p>
+        For hvert tidspunkt (2000, 2005, 2010, 2015, 2020 og 2025) skal du anslå omfanget av skikjøring rundt dette året.
+        Hvert årstall representerer en 5-årsperiode (for eksempel betyr 2000 perioden 1998–2002).
       </p>
+
+      <p>For hver periode ber vi deg oppgi tre anslag for hvor mange personer som driver med topptur i regionen:</p>
+      <ul>
+        <li><b>Et lavt anslag</b> – et tall du mener det er liten sjanse (ca. 20 %) for at det faktiske tallet var lavere enn</li>
+        <li><b>Et beste anslag</b> – det du mener er mest sannsynlig</li>
+        <li><b>Et høyt anslag</b> – et tall du mener det er liten sjanse (ca. 20 %) for at det faktiske tallet var høyere enn</li>
+      </ul>
+
+      <p>I tillegg ber vi deg:</p>
+      <ul>
+        <li>Velge hvor usikker du er (lav, middels eller høy usikkerhet i anslaget)</li>
+        <li>Krysse av om du drev aktivt med topptur i perioden</li>
+        <li>Hvis ja: velge skredvarslingsregion og anslå antall toppturer per år</li>
+      </ul>
+
+      <p><b>Det finnes ikke riktige eller gale svar</b> – vi er ute etter ditt beste anslag.</p>
+
     </div>
+
+    <div class="card stack">
+      <!-- BYTT UT action-URL MED DIN FORMSPREE ENDPOINT -->
+      <form id="surveyForm" action="https://formspree.io/f/mlgwnrdp" method="POST">
+        <div class="grid2">
+          <div>
+            <label for="email">E-post</label>
+            <input id="email" name="email" type="email" placeholder="navn@epost.no" required />
+            <div class="small">Påkrevd.</div>
+          </div>
+
+          <div>
+            <label for="comment">Kommentar (valgfritt)</label>
+            <textarea id="comment" name="comment" rows="1" placeholder="F.eks. hva du la til grunn for anslagene"></textarea>
+            <div class="small">Valgfritt.</div>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>År (periode)</th>
+                <th>Lavt anslag</th>
+                <th>Beste anslag</th>
+                <th>Høyt anslag</th>
+                <th>Usikkerhet</th>
+                <th>Aktiv?</th>
+                <th>Region</th>
+                <th>Antall toppturer/år</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 2000 -->
+              <tr>
+                <td>2000 (1998–2002)</td>
+                <td><input type="number" min="0" step="1" name="p2000_low"  data-series="low"  data-year="2000" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2000_best" data-series="best" data-year="2000" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2000_high" data-series="high" data-year="2000" placeholder="0"></td>
+                <td>
+                  <select name="p2000_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2000_active" value="yes"></td>
+                <td>
+                  <select name="p2000_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2000_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+              <!-- 2005 -->
+              <tr>
+                <td>2005 (2003–2007)</td>
+                <td><input type="number" min="0" step="1" name="p2005_low"  data-series="low"  data-year="2005" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2005_best" data-series="best" data-year="2005" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2005_high" data-series="high" data-year="2005" placeholder="0"></td>
+                <td>
+                  <select name="p2005_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2005_active" value="yes"></td>
+                <td>
+                  <select name="p2005_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2005_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+              <!-- 2010 -->
+              <tr>
+                <td>2010 (2008–2012)</td>
+                <td><input type="number" min="0" step="1" name="p2010_low"  data-series="low"  data-year="2010" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2010_best" data-series="best" data-year="2010" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2010_high" data-series="high" data-year="2010" placeholder="0"></td>
+                <td>
+                  <select name="p2010_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2010_active" value="yes"></td>
+                <td>
+                  <select name="p2010_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2010_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+              <!-- 2015 -->
+              <tr>
+                <td>2015 (2013–2017)</td>
+                <td><input type="number" min="0" step="1" name="p2015_low"  data-series="low"  data-year="2015" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2015_best" data-series="best" data-year="2015" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2015_high" data-series="high" data-year="2015" placeholder="0"></td>
+                <td>
+                  <select name="p2015_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2015_active" value="yes"></td>
+                <td>
+                  <select name="p2015_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2015_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+              <!-- 2020 -->
+              <tr>
+                <td>2020 (2018–2022)</td>
+                <td><input type="number" min="0" step="1" name="p2020_low"  data-series="low"  data-year="2020" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2020_best" data-series="best" data-year="2020" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2020_high" data-series="high" data-year="2020" placeholder="0"></td>
+                <td>
+                  <select name="p2020_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2020_active" value="yes"></td>
+                <td>
+                  <select name="p2020_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2020_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+              <!-- 2025 -->
+              <tr>
+                <td>2025 (2023–2027)</td>
+                <td><input type="number" min="0" step="1" name="p2025_low"  data-series="low"  data-year="2025" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2025_best" data-series="best" data-year="2025" placeholder="0"></td>
+                <td><input type="number" min="0" step="1" name="p2025_high" data-series="high" data-year="2025" placeholder="0"></td>
+                <td>
+                  <select name="p2025_uncertainty">
+                    <option value=""></option>
+                    <option value="lav">lav</option>
+                    <option value="middels">middels</option>
+                    <option value="høy">høy</option>
+                  </select>
+                </td>
+                <td><input type="checkbox" name="p2025_active" value="yes"></td>
+                <td>
+                  <select name="p2025_region">
+                    <option value=""></option>
+                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="p2025_trips">
+                    <option value=""></option>
+                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
+                  </select>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="stack">
+          <div>
+            <label>Graf (oppdateres automatisk)</label>
+            <div class="small">Viser lavt/beste/høyt anslag per periode.</div>
+          </div>
+          <canvas id="chart"></canvas>
+        </div>
+
+        <div class="right">
+          <button class="btn" type="submit">Send inn</button>
+        </div>
+      </form>
+    </div>
+
   </div>
 
   <script>
-    const years = [2000, 2005, 2010, 2015, 2020, 2025];
-    const baseline = 100;
-    let values = years.map(() => baseline);
+    // --- Robust graf: ingen avhengighet av tabell-layout, bare leser inputs med data-series ---
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
 
-    const slidersContainer = document.getElementById("sliders");
-    const maxPercentInput = document.getElementById("maxPercent");
-    const valuesOutput = document.getElementById("valuesOutput");
-    const resetBtn = document.getElementById("resetBtn");
+    const YEAR_ORDER = [2000, 2005, 2010, 2015, 2020, 2025];
 
-    function createSliders(initialMax) {
-      slidersContainer.innerHTML = "";
-      years.forEach((year, index) => {
-        if (year === 2000) return;
-        const row = document.createElement("div");
-        row.className = "slider-row";
+    // Tegn i CSS-piksler, men skaler for skarphet med DPR
+    let CW = 800, CH = 260;
 
-        const header = document.createElement("div");
-        header.className = "slider-header";
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      CW = Math.max(600, Math.floor(rect.width));
+      CH = 260;
 
-        const label = document.createElement("span");
-        label.textContent = year.toString();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(CW * dpr);
+      canvas.height = Math.floor(CH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const valueSpan = document.createElement("span");
-        valueSpan.id = `value-${year}`;
-        valueSpan.textContent = values[index].toString() + " %";
+      draw();
+    }
 
-        header.appendChild(label);
-        header.appendChild(valueSpan);
+    function getSeriesValues(seriesName) {
+      // Henter values i fast rekkefølge (YEAR_ORDER)
+      return YEAR_ORDER.map(y => {
+        const el = document.querySelector(`input[data-series="${seriesName}"][data-year="${y}"]`);
+        if (!el) return 0;
+        const v = Number(el.value);
+        return Number.isFinite(v) ? v : 0;
+      });
+    }
 
-        const slider = document.createElement("input");
-        slider.type = "range";
-        slider.min = "0";
-        slider.max = initialMax.toString();
-        slider.step = "5";
-        slider.value = values[index].toString();
-        slider.id = `slider-${year}`;
+    function drawAxes(x0, y0, w, h) {
+      ctx.strokeStyle = "#999";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x0, y0 + h);
+      ctx.lineTo(x0 + w, y0 + h);
+      ctx.stroke();
+    }
 
-        slider.addEventListener("input", () => {
-          const v = Number(slider.value);
-          values[index] = v;
-          valueSpan.textContent = v.toString() + " %";
-          updateChartAndOutput();
+    function draw() {
+      const low = getSeriesValues("low");
+      const best = getSeriesValues("best");
+      const high = getSeriesValues("high");
+
+      const maxY = Math.max(0, ...high, ...best, ...low);
+
+      ctx.clearRect(0, 0, CW, CH);
+
+      const padL = 55, padR = 16, padT = 22, padB = 42;
+      const x0 = padL, y0 = padT;
+      const w = CW - padL - padR;
+      const h = CH - padT - padB;
+
+      drawAxes(x0, y0, w, h);
+
+      // X labels
+      ctx.fillStyle = "#333";
+      ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.textAlign = "center";
+      YEAR_ORDER.forEach((yr, i) => {
+        const x = x0 + (w * i / (YEAR_ORDER.length - 1));
+        ctx.fillText(String(yr), x, y0 + h + 22);
+      });
+
+      // Y ticks
+      ctx.textAlign = "right";
+      const tickVals = [0, 0.5, 1].map(t => Math.round(maxY * t));
+      [0, 0.5, 1].forEach((t, idx) => {
+        const y = y0 + h - (h * t);
+
+        ctx.strokeStyle = "#eee";
+        ctx.beginPath();
+        ctx.moveTo(x0, y);
+        ctx.lineTo(x0 + w, y);
+        ctx.stroke();
+
+        ctx.fillStyle = "#333";
+        ctx.fillText(String(tickVals[idx]), x0 - 10, y + 4);
+      });
+
+      function toXY(arr, i) {
+        const x = x0 + (w * i / (arr.length - 1));
+        const val = arr[i] || 0;
+        const y = y0 + h - (maxY === 0 ? 0 : (val / maxY) * h);
+        return { x, y };
+      }
+
+      function drawLine(arr, dash, color) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.setLineDash(dash);
+        ctx.beginPath();
+        arr.forEach((_, i) => {
+          const {x, y} = toXY(arr, i);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
         });
-
-        row.appendChild(header);
-        row.appendChild(slider);
-        slidersContainer.appendChild(row);
-      });
-    }
-
-    const ctx = document.getElementById("trendChart").getContext("2d");
-    const chartConfig = {
-      type: "line",
-      data: {
-        labels: years,
-        datasets: [
-          {
-            label: "Relativ toppturaktivitet",
-            data: values,
-            tension: 0.3,
-            borderWidth: 3,
-            borderColor: "#1976d2",
-            pointBackgroundColor: "#1976d2",
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: false,          // <- VIKTIG: ikke responsiv
-        maintainAspectRatio: false, // vi styrer selv med width/height
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "År",
-              font: { size: 14 }
-            },
-            ticks: { font: { size: 13 } }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Relativ mengde toppturaktivitet (%)",
-              font: { size: 14 }
-            },
-            min: 0,
-            max: Number(maxPercentInput.value),
-            ticks: { font: { size: 13 } }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => ctx.parsed.y + " %"
-            }
-          }
-        }
+        ctx.stroke();
+        ctx.restore();
       }
-    };
 
-    const trendChart = new Chart(ctx, chartConfig);
-
-    function updateMaxPercent() {
-      let maxVal = Number(maxPercentInput.value);
-      if (!maxVal || maxVal < 100) {
-        maxVal = 100;
-        maxPercentInput.value = String(maxVal);
+      function drawDots(arr, color) {
+        ctx.save();
+        ctx.fillStyle = color;
+        arr.forEach((_, i) => {
+          const {x, y} = toXY(arr, i);
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
       }
-      years.forEach((year, index) => {
-        if (year === 2000) {
-          values[index] = baseline;
-          return;
-        }
-        const slider = document.getElementById(`slider-${year}`);
-        if (slider) {
-          slider.max = String(maxVal);
-          if (values[index] > maxVal) {
-            values[index] = maxVal;
-            slider.value = maxVal.toString();
-            const span = document.getElementById(`value-${year}`);
-            if (span) span.textContent = maxVal.toString() + " %";
-          }
-        }
-      });
-      trendChart.options.scales.y.max = maxVal;
-      updateChartAndOutput();
+
+      // Linjer
+      drawLine(low,  [4,4], "#777");
+      drawLine(best, [],     "#111");
+      drawLine(high, [8,4],  "#444");
+
+      // Punkter
+      drawDots(low,  "#777");
+      drawDots(best, "#111");
+      drawDots(high, "#444");
+
+      // Legend
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#111"; ctx.fillText("Beste", x0, y0 - 8);
+      ctx.fillStyle = "#777"; ctx.fillText("Lavt",  x0 + 55, y0 - 8);
+      ctx.fillStyle = "#444"; ctx.fillText("Høyt",  x0 + 95, y0 - 8);
     }
 
-    maxPercentInput.addEventListener("input", updateMaxPercent);
-
-    function updateChartAndOutput() {
-      trendChart.data.datasets[0].data = values;
-      trendChart.update();
-      const lines = years.map((year, idx) => `${year}: ${values[idx]} %`);
-      valuesOutput.value = lines.join("\n");
-    }
-
-    resetBtn.addEventListener("click", () => {
-      values = years.map(() => baseline);
-      years.forEach((year, index) => {
-        if (year === 2000) return;
-        const slider = document.getElementById(`slider-${year}`);
-        const span = document.getElementById(`value-${year}`);
-        if (slider) slider.value = baseline.toString();
-        if (span) span.textContent = baseline.toString() + " %";
-      });
-      updateChartAndOutput();
+    // Lytt på ALL input/select på siden (enkelt og robust)
+    document.addEventListener("input", (e) => {
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) draw();
+    });
+    document.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) draw();
     });
 
-    createSliders(Number(maxPercentInput.value));
-    updateChartAndOutput();
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
   </script>
 </body>
 </html>
