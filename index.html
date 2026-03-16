@@ -11,7 +11,6 @@
     .stack { display: grid; gap: 14px; }
     h1 { margin: 0 0 10px; font-size: 22px; }
 
-    /* Strammere intro */
     .intro { line-height: 1.25; }
     .intro p, .intro li { font-size: 15px; margin: 6px 0; }
     .intro ul { margin: 6px 0 0 18px; }
@@ -31,6 +30,7 @@
     .small { font-size: 12px; color: #555; margin-top: 6px; }
 
     .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #e3e3e3; padding: 8px; vertical-align: middle; }
@@ -50,8 +50,6 @@
     }
     .right { text-align: right; }
 
-    .hint { padding: 10px 12px; background: #fff7d6; border: 1px solid #ffe08a; border-radius: 10px; font-size: 13px; }
-
     .tableWrap { overflow-x: auto; }
 
     canvas {
@@ -64,7 +62,7 @@
     }
 
     @media (max-width: 900px) {
-      .grid2 { grid-template-columns: 1fr; }
+      .grid2, .grid3 { grid-template-columns: 1fr; }
       th, td { font-size: 12px; }
     }
   </style>
@@ -74,42 +72,57 @@
   <div class="wrap stack">
 
     <div class="card intro">
-      <h1>Studie – kan vi bruke alles kollektive kunnskap til å estimere hvor mange som går på topptur?</h1>
+      <h1>Kan vi bruke alles kollektive kunnskap til å estimere hvor mange som går på topptur i Norge?</h1>
 
       <p>
-        For hvert tidspunkt (2000, 2005, 2010, 2015, 2020 og 2025) skal du anslå omfanget av skikjøring rundt dette året.
-        Hvert årstall representerer en 5-årsperiode (for eksempel betyr 2000 perioden 1998–2002).
+        <b>[Sett inn info om etikk/GDPR her fra Audun]</b>
       </p>
 
-      <p>For hver periode ber vi deg oppgi tre anslag for hvor mange personer som driver med topptur i din <a href="https://hvtola.github.io/varslingsregioner/" target="_blank">
-  varslingsregion:
-</a></p>
+      <p>
+        For hvert årstall (2005, 2015 og 2025) skal du anslå antall toppturer i din region.
+      </p>
+
+      <p>
+        - <b>[Eksempel]:</b> hvis 100 personer går 5 toppturer per sesong så gir det 500 toppturer per sesong.
+      </p>
+
+      <p>Vi ber deg om å oppgi tre anslag for hvor mange toppturer du tror det var i din <a href="https://hvtola.github.io/varslingsregioner/" target="_blank">varslingsregion</a> for tre perioder (2005, 2015 og 2025):</p>
       <ul>
-        <li><b>Et lavt anslag</b> – et tall du mener det er liten sjanse (ca. 20 %) for at det faktiske tallet var lavere enn</li>
-        <li><b>Et beste anslag</b> – det du mener er mest sannsynlig</li>
-        <li><b>Et høyt anslag</b> – et tall du mener det er liten sjanse (ca. 20 %) for at det faktiske tallet var høyere enn</li>
+        <li><b>Ditt beste anslag</b>, det tallet du mener er mest sannsynlig</li>
+        <li><b>Et realistisk lavt anslag</b> der sannsynligheten er liten for at det faktiske tallet var lavere enn ditt anslag.</li>
+        <li><b>Et realistisk høyt anslag</b> der sannsynligheten er liten for at det faktiske tallet var høyere enn ditt anslag.</li>
       </ul>
 
       <p>I tillegg ber vi deg:</p>
       <ul>
-        <li>Velge hvor usikker du er (lav, middels eller høy usikkerhet i anslaget)</li>
-        <li>Krysse av om du drev aktivt med topptur i perioden</li>
-        <li>Hvis ja: velge skredvarslingsregion og anslå antall toppturer per år</li>
+        <li>Velge hvor usikker du er i anslagene dine (lav, middels eller høy usikkerhet)</li>
+        <li>Oppgi hvilken snøskredvarslingsregion du bor i (se <a href="https://hvtola.github.io/varslingsregioner/" target="_blank">varslingsregion</a>)</li>
+        <li>Anslå antall toppturer du gikk per sesong i den aktuelle perioden</li>
       </ul>
 
-      <p><b>Det finnes ikke riktige eller gale svar</b> – vi er ute etter ditt beste anslag.</p>
+      <p>Vi kjenner ikke de eksakte tallene, derfor er vi ute etter ditt beste anslag.</p>
 
-      <p>Spørsmål? Ta kontakt med <a href="mailto:htla@nve.no">Håvard Boutera Toft</a>. Studiet blir gjennomført som et samarbeid mellom <a href="https://www.nve.no/" target="_blank"> NVE </a>, <a href="https://uit.no/startsida" target="_blank"> UiT </a> og <a href="https://uit.no/research/carepanel" target="_blank"> CARE </a>.</p>
-
+      <p>Spørsmål? Ta kontakt med <a href="mailto:htla@nve.no">Håvard Boutera Toft</a>. Studiet blir gjennomført som et samarbeid mellom <a href="https://www.nve.no/" target="_blank">NVE</a>, <a href="https://uit.no/startsida" target="_blank">UiT</a> og <a href="https://uit.no/research/carepanel" target="_blank">CARE</a>.</p>
     </div>
 
     <div class="card stack">
-      <!-- BYTT UT action-URL MED DIN FORMSPREE ENDPOINT -->
       <form id="surveyForm" action="https://formspree.io/f/mlgwnrdp" method="POST">
-        <div class="grid2">
+        <div class="grid3">
           <div>
             <label for="email">E-post</label>
             <input id="email" name="email" type="email" placeholder="navn@epost.no" required />
+            <div class="small">Påkrevd.</div>
+          </div>
+
+          <div>
+            <label for="region">Varslingsregion</label>
+            <select id="region" name="region" required>
+              <option value=""></option>
+              <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
+              <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
+              <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
+              <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
+            </select>
             <div class="small">Påkrevd.</div>
           </div>
 
@@ -124,53 +137,18 @@
           <table>
             <thead>
               <tr>
-                <th>År (periode)</th>
-                <th>Lavt anslag</th>
-                <th>Beste anslag</th>
-                <th>Høyt anslag</th>
-                <th>Usikkerhet</th>
-                <th>Aktiv?</th>
-                <th>Region</th>
-                <th>Antall toppturer/år</th>
+                <th>Årstall</th>
+                <th>Et realistisk lavt anslag</th>
+                <th>Ditt beste anslag</th>
+                <th>Et realistisk høyt anslag</th>
+                <th>Din usikkerhet</th>
+                <th>Hvor mange toppturer gikk du per sesong i denne perioden?</th>
               </tr>
             </thead>
             <tbody>
-              <!-- 2000 -->
               <tr>
-                <td>2000 (1998–2002)</td>
-                <td><input type="number" min="0" step="1" name="p2000_low"  data-series="low"  data-year="2000" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2000_best" data-series="best" data-year="2000" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2000_high" data-series="high" data-year="2000" placeholder="0"></td>
-                <td>
-                  <select name="p2000_uncertainty">
-                    <option value=""></option>
-                    <option value="lav">lav</option>
-                    <option value="middels">middels</option>
-                    <option value="høy">høy</option>
-                  </select>
-                </td>
-                <td><input type="checkbox" name="p2000_active" value="yes"></td>
-                <td>
-                  <select name="p2000_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
-                <td>
-                  <select name="p2000_trips">
-                    <option value=""></option>
-                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
-                  </select>
-                </td>
-              </tr>
-
-              <!-- 2005 -->
-              <tr>
-                <td>2005 (2003–2007)</td>
-                <td><input type="number" min="0" step="1" name="p2005_low"  data-series="low"  data-year="2005" placeholder="0"></td>
+                <td>Årene rundt 2005</td>
+                <td><input type="number" min="0" step="1" name="p2005_low" data-series="low" data-year="2005" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2005_best" data-series="best" data-year="2005" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2005_high" data-series="high" data-year="2005" placeholder="0"></td>
                 <td>
@@ -181,60 +159,18 @@
                     <option value="høy">høy</option>
                   </select>
                 </td>
-                <td><input type="checkbox" name="p2005_active" value="yes"></td>
-                <td>
-                  <select name="p2005_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
                 <td>
                   <select name="p2005_trips">
                     <option value=""></option>
+                    <option>0</option>
                     <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
                   </select>
                 </td>
               </tr>
 
-              <!-- 2010 -->
               <tr>
-                <td>2010 (2008–2012)</td>
-                <td><input type="number" min="0" step="1" name="p2010_low"  data-series="low"  data-year="2010" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2010_best" data-series="best" data-year="2010" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2010_high" data-series="high" data-year="2010" placeholder="0"></td>
-                <td>
-                  <select name="p2010_uncertainty">
-                    <option value=""></option>
-                    <option value="lav">lav</option>
-                    <option value="middels">middels</option>
-                    <option value="høy">høy</option>
-                  </select>
-                </td>
-                <td><input type="checkbox" name="p2010_active" value="yes"></td>
-                <td>
-                  <select name="p2010_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
-                <td>
-                  <select name="p2010_trips">
-                    <option value=""></option>
-                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
-                  </select>
-                </td>
-              </tr>
-
-              <!-- 2015 -->
-              <tr>
-                <td>2015 (2013–2017)</td>
-                <td><input type="number" min="0" step="1" name="p2015_low"  data-series="low"  data-year="2015" placeholder="0"></td>
+                <td>Årene rundt 2015</td>
+                <td><input type="number" min="0" step="1" name="p2015_low" data-series="low" data-year="2015" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2015_best" data-series="best" data-year="2015" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2015_high" data-series="high" data-year="2015" placeholder="0"></td>
                 <td>
@@ -245,60 +181,18 @@
                     <option value="høy">høy</option>
                   </select>
                 </td>
-                <td><input type="checkbox" name="p2015_active" value="yes"></td>
-                <td>
-                  <select name="p2015_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
                 <td>
                   <select name="p2015_trips">
                     <option value=""></option>
+                    <option>0</option>
                     <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
                   </select>
                 </td>
               </tr>
 
-              <!-- 2020 -->
               <tr>
-                <td>2020 (2018–2022)</td>
-                <td><input type="number" min="0" step="1" name="p2020_low"  data-series="low"  data-year="2020" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2020_best" data-series="best" data-year="2020" placeholder="0"></td>
-                <td><input type="number" min="0" step="1" name="p2020_high" data-series="high" data-year="2020" placeholder="0"></td>
-                <td>
-                  <select name="p2020_uncertainty">
-                    <option value=""></option>
-                    <option value="lav">lav</option>
-                    <option value="middels">middels</option>
-                    <option value="høy">høy</option>
-                  </select>
-                </td>
-                <td><input type="checkbox" name="p2020_active" value="yes"></td>
-                <td>
-                  <select name="p2020_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
-                <td>
-                  <select name="p2020_trips">
-                    <option value=""></option>
-                    <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
-                  </select>
-                </td>
-              </tr>
-
-              <!-- 2025 -->
-              <tr>
-                <td>2025 (2023–2027)</td>
-                <td><input type="number" min="0" step="1" name="p2025_low"  data-series="low"  data-year="2025" placeholder="0"></td>
+                <td>Årene rundt 2025</td>
+                <td><input type="number" min="0" step="1" name="p2025_low" data-series="low" data-year="2025" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2025_best" data-series="best" data-year="2025" placeholder="0"></td>
                 <td><input type="number" min="0" step="1" name="p2025_high" data-series="high" data-year="2025" placeholder="0"></td>
                 <td>
@@ -309,24 +203,14 @@
                     <option value="høy">høy</option>
                   </select>
                 </td>
-                <td><input type="checkbox" name="p2025_active" value="yes"></td>
-                <td>
-                  <select name="p2025_region">
-                    <option value=""></option>
-                    <option>Finnmarkskysten</option><option>Vest-Finnmark</option><option>Nord-Troms</option><option>Lyngen</option><option>Tromsø</option><option>Sør-Troms</option>
-                    <option>Indre Troms</option><option>Lofoten og Vesterålen</option><option>Ofoten</option><option>Salten</option><option>Svartisen</option><option>Helgeland</option>
-                    <option>Trollheimen</option><option>Romsdal</option><option>Sunnmøre</option><option>Indre Fjordane</option><option>Jotunheimen</option><option>Indre Sogn</option>
-                    <option>Voss</option><option>Hallingdal</option><option>Hardanger</option><option>Vest-Telemark</option><option>Heiane</option>
-                  </select>
-                </td>
                 <td>
                   <select name="p2025_trips">
                     <option value=""></option>
+                    <option>0</option>
                     <option>1-2</option><option>3-5</option><option>5-10</option><option>mer enn 10</option>
                   </select>
                 </td>
               </tr>
-
             </tbody>
           </table>
         </div>
@@ -348,13 +232,11 @@
   </div>
 
   <script>
-    // --- Robust graf: ingen avhengighet av tabell-layout, bare leser inputs med data-series ---
     const canvas = document.getElementById("chart");
     const ctx = canvas.getContext("2d");
 
-    const YEAR_ORDER = [2000, 2005, 2010, 2015, 2020, 2025];
+    const YEAR_ORDER = [2005, 2015, 2025];
 
-    // Tegn i CSS-piksler, men skaler for skarphet med DPR
     let CW = 800, CH = 260;
 
     function resizeCanvas() {
@@ -371,7 +253,6 @@
     }
 
     function getSeriesValues(seriesName) {
-      // Henter values i fast rekkefølge (YEAR_ORDER)
       return YEAR_ORDER.map(y => {
         const el = document.querySelector(`input[data-series="${seriesName}"][data-year="${y}"]`);
         if (!el) return 0;
@@ -406,16 +287,14 @@
 
       drawAxes(x0, y0, w, h);
 
-      // X labels
       ctx.fillStyle = "#333";
       ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial";
       ctx.textAlign = "center";
       YEAR_ORDER.forEach((yr, i) => {
-        const x = x0 + (w * i / (YEAR_ORDER.length - 1));
+        const x = x0 + (w * i / Math.max(1, YEAR_ORDER.length - 1));
         ctx.fillText(String(yr), x, y0 + h + 22);
       });
 
-      // Y ticks
       ctx.textAlign = "right";
       const tickVals = [0, 0.5, 1].map(t => Math.round(maxY * t));
       [0, 0.5, 1].forEach((t, idx) => {
@@ -432,7 +311,7 @@
       });
 
       function toXY(arr, i) {
-        const x = x0 + (w * i / (arr.length - 1));
+        const x = x0 + (w * i / Math.max(1, arr.length - 1));
         const val = arr[i] || 0;
         const y = y0 + h - (maxY === 0 ? 0 : (val / maxY) * h);
         return { x, y };
@@ -465,24 +344,20 @@
         ctx.restore();
       }
 
-      // Linjer
       drawLine(low,  [4,4], "#777");
       drawLine(best, [],     "#111");
       drawLine(high, [8,4],  "#444");
 
-      // Punkter
       drawDots(low,  "#777");
       drawDots(best, "#111");
       drawDots(high, "#444");
 
-      // Legend
       ctx.textAlign = "left";
       ctx.fillStyle = "#111"; ctx.fillText("Beste", x0, y0 - 8);
       ctx.fillStyle = "#777"; ctx.fillText("Lavt",  x0 + 55, y0 - 8);
       ctx.fillStyle = "#444"; ctx.fillText("Høyt",  x0 + 95, y0 - 8);
     }
 
-    // Lytt på ALL input/select på siden (enkelt og robust)
     document.addEventListener("input", (e) => {
       const t = e.target;
       if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) draw();
